@@ -1,0 +1,35 @@
+﻿<Window x:Class="ShapesDrawing.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Фигуры (Factory Method)" Height="400" Width="600" WindowStartupLocation="CenterScreen">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Панель управления -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <!-- Добавлен обработчик SelectionChanged -->
+            <ComboBox x:Name="ColorComboBox" 
+                      Width="120" 
+                      Margin="0,0,10,0" 
+                      SelectedIndex="0"
+                      SelectionChanged="ColorComboBox_SelectionChanged">
+                <ComboBoxItem Content="Красный"/>
+                <ComboBoxItem Content="Синий"/>
+                <ComboBoxItem Content="Зеленый"/>
+            </ComboBox>
+
+            <Button x:Name="AddCircleButton" Content="Круг" Width="80" Margin="5,0" Click="AddCircleButton_Click"/>
+            <Button x:Name="AddSquareButton" Content="Квадрат" Width="80" Margin="5,0" Click="AddSquareButton_Click"/>
+            <Button x:Name="AddTriangleButton" Content="Треугольник" Width="80" Margin="5,0" Click="AddTriangleButton_Click"/>
+            <Button x:Name="ClearButton" Content="Очистить" Width="80" Margin="5,0" Click="ClearButton_Click"/>
+        </StackPanel>
+
+        <!-- Панель для отображения фигур -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+            <WrapPanel x:Name="ShapesPanel" Orientation="Horizontal"/>
+        </ScrollViewer>
+    </Grid>
+</Window>
