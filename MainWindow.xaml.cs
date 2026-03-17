@@ -21,30 +21,33 @@ namespace ShapesDrawing
     public partial class MainWindow : Window
     {
 
-        // Текущие создатели для каждой фигуры
-        private CircleCreator _currentCircleCreator;
-        private SquareCreator _currentSquareCreator;
-        private TriangleCreator _currentTriangleCreator;
+    private IFigureFactory _currentFactory;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            // Устанавливаем начальный цвет (первый элемент в ComboBox)
-            // ВАЖНО: делаем это ПОСЛЕ InitializeComponent(), но до установки обработчика
-            if (ColorComboBox.Items.Count > 0)
-            {
-                ColorComboBox.SelectedIndex = 0; // Выбираем первый элемент (Красный)
-            }
-
-            // Теперь можно обновить создателей
-            UpdateCreatorsBasedOnColor();
+            // Устанавливаем начальный цвет ПОСЛЕ инициализации компонентов
+            // НО до подписки на события, чтобы избежать лишних вызовов
+            Loaded += MainWindow_Loaded;
         }
 
-        // Метод для обновления всех создателей при смене цвета
-        private void UpdateCreatorsBasedOnColor()
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            // Проверяем, что SelectedItem существует и это ComboBoxItem
+            // Устанавливаем начальное значение ComboBox
+            if (ColorComboBox.Items.Count > 0)
+            {
+                ColorComboBox.SelectedIndex = 0;
+            }
+
+            // Теперь можно безопасно обновить фабрику
+            UpdateFactoryBasedOnColor();
+        }
+
+        // Метод для обновления фабрики при смене цвета
+        private void UpdateFactoryBasedOnColor()
+        {
+            // Важно: проверяем, что SelectedItem существует
             if (ColorComboBox.SelectedItem == null) return;
 
             var selectedItem = ColorComboBox.SelectedItem as ComboBoxItem;
@@ -53,46 +56,40 @@ namespace ShapesDrawing
             switch (selectedItem.Content.ToString())
             {
                 case "Красный":
-                    _currentCircleCreator = new RedCircleCreator();
-                    _currentSquareCreator = new RedSquareCreator();
-                    _currentTriangleCreator = new RedTriangleCreator();
+                    _currentFactory = new RedFactory();
                     break;
                 case "Синий":
-                    _currentCircleCreator = new BlueCircleCreator();
-                    _currentSquareCreator = new BlueSquareCreator();
-                    _currentTriangleCreator = new BlueTriangleCreator();
+                    _currentFactory = new BlueFactory();
                     break;
                 case "Зеленый":
-                    _currentCircleCreator = new GreenCircleCreator();
-                    _currentSquareCreator = new GreenSquareCreator();
-                    _currentTriangleCreator = new GreenTriangleCreator();
+                    _currentFactory = new GreenFactory();
                     break;
                 default:
                     return;
             }
 
-            // Очищаем фигуры при смене цвета
+            // При смене цвета очищаем старые фигуры
             ClearShapes();
         }
 
         private void AddCircleButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_currentCircleCreator == null) return;
-            var circle = _currentCircleCreator.CreateCircle();
+            if (_currentFactory == null) return;
+            var circle = _currentFactory.CreateCircle();
             ShapesPanel.Children.Add(circle.CreateUIElement());
         }
 
         private void AddSquareButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_currentSquareCreator == null) return;
-            var square = _currentSquareCreator.CreateSquare();
+            if (_currentFactory == null) return;
+            var square = _currentFactory.CreateSquare();
             ShapesPanel.Children.Add(square.CreateUIElement());
         }
 
         private void AddTriangleButton_Click(object sender, RoutedEventArgs e)
         {
-            if (_currentTriangleCreator == null) return;
-            var triangle = _currentTriangleCreator.CreateTriangle();
+            if (_currentFactory == null) return;
+            var triangle = _currentFactory.CreateTriangle();
             ShapesPanel.Children.Add(triangle.CreateUIElement());
         }
 
@@ -103,16 +100,20 @@ namespace ShapesDrawing
 
         private void ClearShapes()
         {
-            ShapesPanel.Children.Clear();
+            // Дополнительная проверка, что ShapesPanel не null
+            if (ShapesPanel != null)
+            {
+                ShapesPanel.Children.Clear();
+            }
         }
 
         // Обработчик смены выбора в ComboBox
         private void ColorComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Дополнительная проверка, чтобы избежать ошибки при инициализации
-            if (!IsInitialized) return;
+            // Защита от вызова до полной инициализации
+            if (!IsLoaded) return;
 
-            UpdateCreatorsBasedOnColor();
+            UpdateFactoryBasedOnColor();
         }
     }
 }

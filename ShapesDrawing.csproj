@@ -67,9 +67,10 @@
     <Compile Include="Entities\Figure.cs" />
     <Compile Include="Entities\Square.cs" />
     <Compile Include="Entities\Triangle.cs" />
-    <Compile Include="Factories\CircleFactories.cs" />
-    <Compile Include="Factories\SquareFactories.cs" />
-    <Compile Include="Factories\TriangleFactories.cs" />
+    <Compile Include="Factories\BlueFactory.cs" />
+    <Compile Include="Factories\GreenFactory.cs" />
+    <Compile Include="Factories\IFigureFactory.cs" />
+    <Compile Include="Factories\RedFactory.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
